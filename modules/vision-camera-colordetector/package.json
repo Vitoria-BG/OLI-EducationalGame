@@ -1,0 +1,21 @@
+{
+  "name": "react-native-vision-camera-colordetector",
+  "version": "1.0.0",
+  "description": "A Vision Camera Frame Processor Plugin to detect color.",
+  "main": "src/index",
+  "files": [
+    "src",
+    "android",
+    "ios",
+    "vision-camera-colordetector.podspec",
+    "!android/build",
+    "!ios/build"
+  ],
+  "keywords": ["react-native", "vision-camera"],
+  "peerDependencies": {
+    "react-native-vision-camera": ">=4.0.0"
+  },
+  "dependencies": {
+    "react-native-worklets-core": ">=1.6.0"
+  }
+}

@@ -1,0 +1,2 @@
+C:\Projects\OLI-EducationalGame\modules\vision-camera-colordetector\android\src\main\java\com\visioncameracolordetector\ColorDetectorFrameProcessorPlugin.kt
+C:\Projects\OLI-EducationalGame\modules\vision-camera-colordetector\android\src\main\java\com\visioncameracolordetector\VisionCameraColordetectorPackage.kt
