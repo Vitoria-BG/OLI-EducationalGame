@@ -11,9 +11,22 @@ export interface ColorData {
 
 /**
  * Detects the color from the center of a camera frame.
+ * This function should be called from within a frame processor.
+ * 
+ * @param frame The camera frame to analyze
+ * @returns Color data with RGB values and hex string
+ * 
+ * @example
+ * const frameProcessor = useFrameProcessor((frame) => {
+ *   'worklet';
+ *   const color = detectColor(frame);
+ *   console.log(color.hex);
+ * }, []);
  */
-export function detectColor(frame: Frame): ColorData {
+export const detectColor = (frame: Frame): ColorData => {
   'worklet';
-  // @ts-expect-error: __detectColor is a native function injected by VisionCamera
-  return __detectColor(frame);
-}
+  
+  // The plugin is registered as "detectColor" in the native code
+  // Vision Camera exposes it directly as detectColor in the worklet context
+  return (global as any).detectColor(frame);
+};

@@ -2,23 +2,29 @@ package com.visioncameracolordetector
 
 import android.graphics.Bitmap
 import android.graphics.Color
-import com.mrousavy.camera.frameprocessor.Frame
-import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin
-import com.mrousavy.camera.frameprocessor.VisionCameraProxy
+import android.graphics.ImageFormat
+import android.graphics.Rect
+import android.graphics.YuvImage
+import android.media.Image
+import com.mrousavy.camera.frameprocessors.Frame
+import com.mrousavy.camera.frameprocessors.FrameProcessorPlugin
+import com.mrousavy.camera.frameprocessors.VisionCameraProxy
+import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 
 class ColorDetectorFrameProcessorPlugin(proxy: VisionCameraProxy, options: Map<String, Any>?) : FrameProcessorPlugin() {
 
-    // The 'override' keyword is important!
     override fun callback(frame: Frame, params: Map<String, Any>?): Any? {
-        // Ensure the image data is valid
-        if (frame.image == null) {
-            return null
-        }
-
         try {
-            // Convert the Frame to a Bitmap
-            // Set isMirrored to false as we want the raw image
-            val bitmap: Bitmap = frame.toBitmap()
+            // Get the image from the frame
+            val image = frame.getImage()
+            
+            // Convert Image to Bitmap
+            val bitmap = imageToBitmap(image)
+            
+            if (bitmap == null) {
+                return null
+            }
 
             // Get the pixel from the center of the bitmap
             val centerX = bitmap.width / 2
@@ -43,6 +49,33 @@ class ColorDetectorFrameProcessorPlugin(proxy: VisionCameraProxy, options: Map<S
             // Log any errors during processing
             e.printStackTrace()
             return null
+        }
+    }
+
+    private fun imageToBitmap(image: Image): Bitmap? {
+        return try {
+            val planes = image.planes
+            val buffer = planes[0].buffer
+            val pixelStride = planes[0].pixelStride
+            val rowStride = planes[0].rowStride
+            val rowPadding = rowStride - pixelStride * image.width
+
+            val bitmap = Bitmap.createBitmap(
+                image.width + rowPadding / pixelStride,
+                image.height,
+                Bitmap.Config.ARGB_8888
+            )
+            bitmap.copyPixelsFromBuffer(buffer)
+            
+            // Crop to remove padding if needed
+            if (rowPadding > 0) {
+                Bitmap.createBitmap(bitmap, 0, 0, image.width, image.height)
+            } else {
+                bitmap
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }
